@@ -3,7 +3,7 @@ rm(list=ls())
 
 ##### Set working directory
 #setwd("D:/Dropbox/Teaching/UTD/predictive_analysis/2023/problem sets/pset1/solution")
-setwd("~/Dropbox/Teaching/UTD/predictive_analysis/2023/problem sets/pset1/solution")
+setwd("/Users/harikrishnadev/Library/Mobile Documents/com~apple~CloudDocs/School Work/Sem 2/BUAN 6337/BUAN_6337_Predictive_Analysis/HW/HW-1")
 
 ### Read required packages
 library("data.table")

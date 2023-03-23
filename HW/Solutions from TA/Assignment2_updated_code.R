@@ -12,6 +12,8 @@ library(psych)
 
 #use setwd while running the codes, to set working directory to access the csv files
 
+setwd("/Users/harikrishnadev/Library/Mobile Documents/com~apple~CloudDocs/School Work/Sem 2/BUAN 6337/BUAN_6337_Predictive_Analysis/HW/HW-2/")
+
 # Part a
 earthquakes = fread(file = "earthquakes.csv",
                     na.strings = c("NA", ""), 

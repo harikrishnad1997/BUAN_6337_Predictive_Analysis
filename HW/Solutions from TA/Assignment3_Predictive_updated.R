@@ -1,5 +1,5 @@
 #Question 1
-
+setwd("/Users/harikrishnadev/Library/Mobile Documents/com~apple~CloudDocs/School Work/Sem 2/BUAN 6337/BUAN_6337_Predictive_Analysis/HW/HW-3/")
 #Part-c
 library(data.table)
 
