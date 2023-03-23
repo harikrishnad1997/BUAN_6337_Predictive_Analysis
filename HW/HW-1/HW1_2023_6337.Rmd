@@ -1,0 +1,243 @@
+---
+title: "HW1_2023_HXD220000_MXB220061_SXV220020"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+date: "2023-02-13"
+---
+
+Authors : 
+Mankirat Singh Bharma MXB220061 - Harikrishna Dev HXD220000 - Sarthak Vajpayee SXV220020
+
+Loading required libraries and cleaning environment
+
+```{r}
+rm(list = ls())
+demo = T
+require(psych)
+require(data.table)
+```
+
+Section - 1
+
+1.  Swine Flu problem
+
+```{=html}
+<!-- -->
+```
+a.  First, examine the raw data file SwineFlu2009.csv using Excel.
+b.  Read the data to memory using fread(). Examine the data in Rstudio.
+
+```{r}
+
+SwineFlu <- fread("SwinFlu2009.csv",
+                  na.strings = c("NA", ""), 
+                  sep = "auto",
+                  stringsAsFactors = FALSE,
+                  data.table = TRUE)
+str(SwineFlu)
+```
+
+c.  Then, assign the proper variable name to each variable. Make sure that each variable is assigned the correct type -- character or numeric. (hint: use colClasses() to examine the class of columns)
+
+```{r}
+
+colClasses = c("observation_id","firstcase_date_id",
+               "firstcase_continent_id","country",
+               "firstcasereport_date","cum_case_April",
+               "cum_case_May","cum_case_June","cum_case_July","cum_case_August",
+               "cum_case_Aug09","firstdeath_date_id","firstdeath_continent_id",
+               "firstdeath_date","cum_death_May","cum_death_June","cum_death_July",
+               "cum_death_August","cum_death_September","cum_death_October","cum_death_November","cum_death_December")
+
+colnames(SwineFlu) <- colClasses
+
+if(demo) {str(SwineFlu)
+  summary(SwineFlu)}
+```
+
+d.  In R, dates can be stored as a special type of numeric data. Modify the DATA step to make sure that the dates are read in the correct R date format (not as character).
+
+```{r}
+
+SwineFlu$firstcasereport_date <- as.Date(SwineFlu$firstcasereport_date,format = "%m/%d/%Y")
+SwineFlu$firstdeath_date <- as.Date(SwineFlu$firstdeath_date,format = "%m/%d/%Y")
+if(demo) {str(SwineFlu)}
+```
+
+e.  Calculate the date difference of the firstcasereport_date variable from the first case report date across the world, which is Apr 24, 2009
+
+```{r}
+SwineFlu$Datediff_calc <- difftime(SwineFlu$firstcasereport_date,as.Date("2009-04-29"),units = "days")
+if(demo) {str(SwineFlu)}
+```
+
+f.  Subset the columns ("firstcase_date_id", "country") and the answer from the above question 1.e, and save it as the file "SwineFlu2009_days_from_first_incidence.csv") using fwrite(). (HINT: the new csv file should have three columns)
+
+```{r}
+
+SwineFlu2009_days_from_first_incidence <- subset(SwineFlu,select = c("firstcase_date_id","country","Datediff_calc"))
+
+fwrite(SwineFlu2009_days_from_first_incidence,"SwineFlu2009_days_from_first_incidence.csv")
+str(SwineFlu2009_days_from_first_incidence)
+```
+
+Section -2
+
+a.  Examine the raw data file Pizza.csv and read it into R using fread().
+
+```{r}
+
+pizza <- fread("Pizza.csv")
+
+str(pizza)
+```
+
+b.  Print the data set (on the Console).
+
+```{r}
+
+print(pizza)
+
+```
+
+c.  Examine the class of each column of data.
+
+```{r}
+
+lapply(pizza,class)
+
+```
+
+d.  Print the summary statistics of the data using describe() in "psych" package.
+
+```{r}
+
+describe(pizza)
+
+```
+
+e.  Open the raw data file in a simple editor like WordPad and compare the data values to the output from part b) to make sure that they were read correctly into R. In a comment in your report, identify any problems with the R data set that cannot be resolved using the fread(). Explain what is causing the problem.
+
+Ans: Survey Number columns in the data frame should be a factor variable as it is unique and is not ordinal in nature. The fread() function identifies the column as an integer and assume it's an continuous variable.
+
+f.  Read the same raw data file, Pizza.csv, again. This time, make sure the issues you've identified in the previous step ls resolved.
+
+```{r}
+
+pizza <- fread("Pizza.csv",header = T,colClasses = c("factor","integer","integer","integer","integer","integer"))
+if(demo) {str(pizza)}
+
+```
+
+g.  Create a column that contains the average ratings for each topping. (Hint: You need to make sure "NA" entries are not included in the average. They should not be treated as zeros. See the documentation for rowMeans().)
+
+```{r}
+
+pizza$avg_rating <- rowMeans(pizza[,2:6],na.rm = T)
+if(demo) {str(pizza)
+  describe(pizza)
+  }
+
+```
+
+Section - 3
+
+a.  Examine the raw data file Hotel.csv and read it into R using fread().Is there any "problem" with this data read? Explain.
+
+Ans: The fread() function creates a data frame using the first row of the data its reading. So, the initial data frame which was created has 11 columns in it. But the data has 12 columns in it. The data has an additional column when the internet_usage flag is YES. To solve this problem, I have used read.csv() function and manipulated the df accordingly.
+
+```{r}
+
+hotel <- fread("Hotel.csv")
+
+```
+
+```{r}
+hotel <- fread("Hotel.csv", fill=TRUE, na.strings = c("NA", ""),
+               sep = "auto", data.table = TRUE, stringsAsFactors = FALSE)
+if(demo) {str(hotel)}
+```
+
+b.  Assign the column names for room number and number of guests first. For other column names, you should assign them as you answer the remaining questions.
+
+```{r}
+colnames(hotel)[1] <- "room_no"
+colnames(hotel)[2] <- "no_of_guests"
+if(demo) {str(hotel)}
+```
+
+c.  Create date variables for the check-in and check-out dates, and format them to display as readable dates.
+
+```{r}
+
+hotel$check_in_date <- as.Date(with(hotel,paste(V3,V4,V5,sep="-")),"%m-%d-%Y")
+hotel$check_out_date <- as.Date(with(hotel,paste(V6,V7,V8,sep="-")),"%m-%d-%Y")
+if(demo) {str(hotel)}
+
+```
+
+d.  Using the data.table syntax, create a column of days of internet use. If the guest did not use the internet, assign "0". Check the class of the column you created and coerce the variable type to "numeric" as necessary. (Hint. Days of internet use is recorded only when the use of wireless internet service is YES. See the documentation for as.numeric() and as.character())
+
+```{r}
+
+hotel[,':='(internet_usage=as.numeric(ifelse(V9 == "YES",V10,0)))]
+if(demo) {str(hotel)}
+
+```
+
+e.  Using the data.table syntax, create a column of room type.
+
+```{r}
+
+hotel[,':='(room_type=ifelse(V9 == "YES",as.character(V11),as.character(V10)))]
+if(demo) {str(hotel)}
+
+```
+
+f.  Using the data.table syntax, create a column of room rate. Check the class of the column you created and coerce the variable type to "numeric" as necessary. (Again, use the hint from the above)
+
+```{r}
+
+hotel[,':='(room_rate=ifelse(V9 == "YES",V12,strtoi(V11)))]
+if(demo) {str(hotel)}
+
+```
+
+g.  Subset the cleaned variables only and create a new data.table: room number, number of guests, check-in date, check-out date, use of wireless Internet service, number of days of Internet use, room type, and room rate.
+
+```{r}
+
+hotelColNames <- c("room_no","no_of_guests","check_in_date","check_out_date","internet_usage","room_type","room_rate")
+hotel_cleaned <- subset(hotel,select = hotelColNames)
+if(demo) {str(hotel_cleaned)}
+
+```
+
+h.  Create a variable that calculates the subtotal as the room rate times the number of days in the stay, plus a per person rate (\$10 per day for each person beyond one guest), plus an Internet service fee (\$9.95 for a one-time activation and \$5.95 per day of use).
+
+```{r}
+
+hotel_cleaned$subtotal <- hotel_cleaned$room_rate * as.numeric(difftime(hotel_cleaned$check_out_date,hotel_cleaned$check_in_date,units = "days")) + 10 * (hotel_cleaned$no_of_guests-1) * as.numeric(difftime(hotel_cleaned$check_out_date, hotel_cleaned$check_in_date, units="days")) + ifelse(hotel_cleaned$internet_usage > 0 , 9.95 + 5.95 * (hotel_cleaned$internet_usage),0)
+if(demo) {str(hotel_cleaned)}
+
+```
+
+i.  Create a variable that calculates the grand total as the subtotal plus sales tax at 8.75%. The result should be rounded to two decimal places.
+
+```{r}
+
+hotel_cleaned$total <- round(hotel_cleaned$subtotal * 1.0875,2)
+if(demo) {str(hotel_cleaned)}
+
+```
+
+j.  View the resulting data set. In a comment in your report, state the value for the grand total for room 247, checked in on Feb. 7th, 2014.
+
+```{r}
+
+(results <- hotel_cleaned[which(hotel_cleaned$room_no == 247 & hotel_cleaned$check_in_date == "2014-02-07"),])
+results$total
+
+```

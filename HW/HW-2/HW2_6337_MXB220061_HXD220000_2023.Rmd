@@ -1,0 +1,336 @@
+---
+title: "HW2_6337_MXB220061_HXD220000_2023"
+output:
+  word_document: default
+  pdf_document: default
+  html_document:
+    df_print: paged
+date: "2023-02-20"
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+Authors : Mankirat Singh Bharma MXB220061 - Harikrishna Dev HXD220000
+
+Loading required libraries and cleaning environment
+
+```{r}
+rm(list = ls())
+demo = T
+require(psych)
+require(data.table)
+require(dplyr)
+require(ggplot2)
+if(demo) {setwd("~/Library/Mobile Documents/com~apple~CloudDocs/School Work/Sem 2/BUAN 6337/HW/pset2")}
+```
+
+Section - 1
+
+1.  The United States Geological Survey provides data on earthquakes of
+    historical interest. Earthquakes.csv contains data about earthquakes
+    with a magnitude greater than 2.5 in the United States and its
+    territories. The variables are year, month, day, state, and
+    magnitude.
+
+```{=html}
+<!-- -->
+```
+(a) California and Alaska are the two states with the highest number of
+    earthquakes in the country. Read the data and create a new data set
+    that includes only these two by filtering only the relevant rows.
+
+```{r}
+
+ertqks <- fread("earthquakes.csv",header = T)[State %in%  c("Alaska","California"),]
+if(demo) {str(ertqks)
+summary(ertqks)
+}
+
+```
+
+b)  You are interested in the following statistics for the magnitude of
+    earthquake:- Mean-Median-Standard Deviation-Minimum and
+    maximum-25thand 75thpercentiles Create a table that shows the above
+    statistics across different states within each year. In particular,
+    your table must have years at the first column and it must break
+    down the results across different states in the second column. In
+    order to make the table short, further assume you are interested
+    only in recent years and want to create a table that shows the
+    desired statistics from 2002 to 2011
+
+```{r}
+
+summary_ertqks <- ertqks[,':='(mean=mean(Magnitude), median = median(Magnitude),std = sd(Magnitude),min = min(Magnitude),max=max(Magnitude),percentile.25 = quantile(Magnitude,0.25),percentile.75 = quantile(Magnitude,0.75)),by=c("Year","State")]
+
+if(demo) {summary(summary_ertqks)}
+
+summary_ertqks_flt <- summary_ertqks[Year>=2002 & Year<=2011,]
+summary_ertqks_flt <- summary_ertqks_flt[order(Year,State)]
+
+if(demo) {str(summary_ertqks_flt)
+  summary(summary_ertqks_flt)}
+
+```
+
+c)  Modify your R code in (b) such that the results for each year is
+    shown in a separate table.
+
+```{r}
+
+year <- unique(summary_ertqks_flt$Year)
+
+for(i in year) {
+  assign(paste0("ertqk",i),as.data.table(summary_ertqks_flt[Year ==i,]))
+  str(get(paste0("ertqk",i)))
+}
+
+```
+
+d)  Now, assume you want to show the same results in part (b)but with
+    the difference that years are shown is the first column and the
+    states are shown in the top row.
+
+```{r}
+ertqk_summary <- dcast(summary_ertqks_flt,Year ~ State,fun = mean,value.var = c("mean", "median", "std", "min", "max","percentile.25","percentile.75"))
+if(demo) {str(ertqk_summary)}
+```
+
+e)  You are interested in how the magnitude of earthquakes is trending
+    over time for each state. In one graph, plot two time series plots,
+    side by side,which shows the trend of average magnitude of
+    earthquakes over time for the two states
+
+```{r}
+
+summary_ertqks_flt %>%
+ggplot(aes(Year,mean))+
+geom_line(aes(colour = summary_ertqks_flt$State))+ labs(x = "Year" , y ="Average Mag." )+ facet_wrap(~summary_ertqks_flt$State, nrow = 1)+ theme(legend.position = "none")+
+ggtitle("Trend of Average Magnitude")
+
+```
+
+f)  Test the following null hypothesis: "the average magnitude of
+    earthquakes in California is equal to that of Alaska"
+
+```{r}
+
+boxplot(summary_ertqks_flt$Magnitude ~ summary_ertqks_flt$State)
+
+```
+
+H0: Avg Magnitude (California) = Avg Magnitude (Alaska)
+
+H1: Avg Magnitude (California) \<\> Avg Magnitude (Alaska)
+
+```{r}
+
+t.test(summary_ertqks_flt$Magnitude ~ summary_ertqks_flt$State)
+
+```
+
+Since p- value was less than 0.05, we reject the null hypothesis
+
+Q. 2 Suppose that at a local university the study guidelines for the
+College of Science and Math are to study two to three hours per unit per
+week. The instructor of the class, Orientation to the Statistics Major,
+takes these guidelines very seriously. He asks students to record their
+study time each week, and at the end of the term he compares their
+average study time per week to their term GPA. "study_gpa.csv" contains
+student identification information, orientation course-section number,
+number of units enrolled, average time studied, and term GPA.
+
+a)  Graph the histogram for hours of study. Use the startpoint=0 and
+    bandwidth=5.Also, overlaid to this graph, display the plots for the
+    kernel density and the best fitting normal curve. Using an
+    eyeballing approach, can we say the hours of study follows a normal
+    distribution?(Hint: usegeom_histogram() and geom_density() in
+    ggplot2)
+
+```{r}
+
+gpa <- fread("study_gpa.csv",header = T)
+
+if(demo) {str(gpa)}
+
+```
+
+```{r}
+
+hist_plot <- ggplot(gpa, aes(AveTime)) +
+geom_histogram(aes(y=..density..), binwidth = 5) + # scale histogram y
+geom_density(col = "red")
+print(hist_plot + labs(x="Average Time",y = "Frequency"))
+
+```
+
+Upon looking at the histogram, we can conclude that the distribution is
+positively(right) skewed distribution.
+
+b)  Check statistics of the average hours of study.
+
+```{r}
+
+summary(gpa$AveTime)
+
+```
+
+c)  Conduct a hypothesis test to check whether there exists a
+    significance correlation between units enrolled, hours of study and
+    GPA for section 2. What is your conclusion? Doe correlation mean
+    that one variable causes the other?
+
+```{r}
+
+# H0: GPA 
+
+var = names(gpa)[5:7]
+
+forms <- lapply(1:length(var),function(i) formula(paste(var[i], "~", paste(var[-i], collapse = "+"))))
+
+models <- lapply(forms,aov,data = gpa[Section == 2])
+
+for(i in 1:length(forms)) {
+  print(paste("Model:",forms[i]))
+  print(summary(models[[i]]))
+  }
+
+```
+
+We can see that GPA is highly correlated with Units enrolled and hours
+of study
+
+Q.3 A study was conducted to see whether taking vitamin E daily would
+reduce the levels of atherosclerotic disease in a random sample of 500
+individuals. Clinical measurements, including thickness of plaque of the
+carotid artery (taken via ultrasound), were recorded at baseline and at
+two subsequent visits in a data set "vite.csv". Patients were divided
+into two strata according to their baseline plaque measurement.
+
+a)  First,read the data.The variable descriptions are as follows:
+
+ID: individual identifier
+
+Strata: 1=baseline plaque above 0.60mm+, 2=baseline plaque below 0.60mm
+Treatment: 0=placebo group, 1=vitamin E treatment
+
+Plaque: Plaque measurement (mm)
+
+HDL: HDL cholesterol (mg/DL)
+
+LDL: LDL cholesterol (mg/DL)
+
+Visit: 0=baseline, 1=first year, 2=second year
+
+Trig: Triglycerides mg/DL
+
+SBP: Systolic blood pressure (mm/Mg)
+
+DBP: Diastolic blood pressure (mm/Mg)
+
+Alcohol: \# alcoholic drinks per day
+
+Smoke: \# cigarettes smoked per day
+
+```{r}
+
+vite <- fread("vite.csv",header = T,na.strings = c("NA",""),sep = "auto",stringsAsFactors = F)
+
+if(demo) {str(vite)
+  summary(vite)}
+
+```
+
+(b) Note that the current data is in long format. We first want to
+    transform the data to wide format so that we can conduct certain
+    statistical analyses. Basically, long formats have repeated
+    observations for a given person, whereas wide formats record those
+    observations column-wise. Create the data so that plague values for
+    each visit (0, 1, 2) are recorded in 3 separate columns as opposed
+    to 3 rows, by ID and treatment. (cf. Reference:
+    <https://data.library.virginia.edu/reshaping-data-from-wide-to-long/>
+    although you may want to stick with the data.table() syntax and
+    commands)
+
+```{r}
+
+vite_fnl <- dcast(vite,formula = ID+Treatment~Visit,value.var = "Plaque")
+
+colNames <- c("baseline","first_year","second_year")
+colnames(vite_fnl)[3:5] <- colNames
+
+##vite_0 <- vite_fnl[vite_fnl$Treatment == 0]
+
+if(demo) {str(vite_fnl)}
+
+```
+
+c)  Assume there were no placebo group (i.e., treatment = 0) in your
+    data set. Conduct a test to see whether there is a difference in
+    plaque level before treatment and after the second visit? Interpret
+    your results.
+
+H0: Baseline = Second year H1: Baseline \<\> Second year
+
+```{r}
+
+t.test(vite_fnl$baseline[vite_fnl$Treatment == 1],vite_fnl$second_year[vite_fnl$Treatment == 1],paired = T)
+
+```
+
+As p_value \< 0.05, we can rejected the null hypothesis.
+
+d)  Now, considering the fact that there is indeed a control group in
+    your dataset, conduct a new test to check whether there is a
+    difference in plaque level before treatment and after the second
+    visit. Interpret your results
+
+H0: treatment hasn't effected the levels of plaque H1: treatment has
+effected the levels of plaque
+
+```{r}
+vite_fnl$diff <-vite_fnl$second_year - vite_fnl$baseline
+t.test(vite_fnl$diff[vite_fnl$Treatment == 1],vite_fnl$diff[vite_fnl$Treatment == 0], paired = T)
+
+```
+
+As p_value \> 0.05, H0 cannot be rejected.
+
+e)  Which of the tests in part (c) and (d) is more reliable? Explain.
+
+Test - 2 helps us understand the effect of Vitamin E between the control
+and test group. This would give us a better idea on actual impact of the
+experiment.
+
+f)  One of the critical factors in randomizing the subjects in control
+    and treatment groups is to make sure that the subjects are perfectly
+    randomized in all aspects. Using the last two columns (i.e., alcohol
+    and cigarette usage) of the original (long format) data, conduct two
+    tests to check whether subjects are randomized perfectly. If they
+    are perfectly randomized, then we should not expect much difference
+    in alcohol (or cigarette) consumption for control vs. treatment
+    groups.
+
+H0: Distribution of alcohol consumers is randomized (Mean of treatment
+is same between both groups) H1: Distribution of alcohol consumers is
+not randomized (Mean of treatment is not same between both groups)
+
+```{r}
+
+t.test(data = vite, Alcohol~Treatment)
+
+```
+
+As p_value \< 0.05, we can reject null hypothesis.
+
+H0: Distribution of smokers is randomized (Mean of treatment is same
+between both groups) H1: Distribution of smokers is not randomized (Mean
+of treatment is not same between both groups)
+
+```{r}
+
+t.test(data = vite, Smoke~Treatment)
+
+```
+
+As p_value \< 0.05, we can reject null hypothesis.
