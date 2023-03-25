@@ -14,4 +14,4 @@
 
 ### Student remarks
 
-The repository has most of the code used in assignments.
+The repository has most of the code used in assignments. I haven't received full credit on these assignments. Will update the remarks after the course is done.
