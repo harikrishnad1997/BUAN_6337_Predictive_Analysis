@@ -24,7 +24,7 @@ require(data.table)
 require(dplyr)
 require(ggplot2)
 require(rlist)
-if(demo) {setwd("~/Library/Mobile Documents/com~apple~CloudDocs/School Work/Sem 2/BUAN 6337/HW/pset3")}
+if(demo) {setwd("~/Library/Mobile Documents/com~apple~CloudDocs/School Work/Sem 2/BUAN 6337/BUAN_6337_Predictive_Analysis/HW/HW-3")}
 ```
 
 1 (R) (Weak) Law of Large Numbers • (a) Consider a continuous random
@@ -369,51 +369,9 @@ b.
 ```{r}
 
 vdgm_2013 <- vdgm[,Platform]
-vdgm$Action = ifelse(vdgm$Genre =='Action', 1, 0)
-vdgm$adventure = ifelse (vdgm$Genre == 'Adventure',1, 0)
-vdgm$fighting = ifelse(vdgm$Genre =='Fighting', 1, 0)
-vdgm$misc = ifelse (vdgm$Genre == 'Misc',1, 0)
-vdgm$platform = ifelse(vdgm$Genre =="Platform",1, 0)
-vdgm$puzzle = ifelse(vdgm$Genre =="Puzzle", 1, 0)
-vdgm$racing = ifelse(vdgm$Genre =='Racing', 1, 0)
-vdgm$Role_playing = ifelse(vdgm$Genre == "Role-Playing", 1, 0)
-vdgm$Shooter = ifelse(vdgm$Genre =="Shooter", 1, 0)
-vdgm$simulation = ifelse(vdgm$Genre == 'Simulation', 1, 0)
-vdgm$sports = ifelse(vdgm$Genre == "Sports", 1, 0)
-vdgm$strategy = ifelse(vdgm$Genre == 'strategy',1,0)
-
-vdgm$Action = ifelse(vdgm$Genre =='Action', 1, 0)
-vdgm$adventure = ifelse (vdgm$Genre == 'Adventure',1, 0)
-vdgm$fighting = ifelse(vdgm$Genre =='Fighting', 1, 0)
-vdgm$misc = ifelse (vdgm$Genre == 'Misc',1, 0)
-vdgm$platform = ifelse(vdgm$Genre =="Platform",1, 0)
-vdgm$puzzle = ifelse(vdgm$Genre =="Puzzle", 1, 0)
-vdgm$racing = ifelse(vdgm$Genre =='Racing', 1, 0)
-vdgm$Role_playing = ifelse(vdgm$Genre == "Role-Playing", 1, 0)
-vdgm$Shooter = ifelse(vdgm$Genre =="Shooter", 1, 0)
-vdgm$simulation = ifelse(vdgm$Genre == 'Simulation', 1, 0)
-vdgm$sports = ifelse(vdgm$Genre == "Sports", 1, 0)
-vdgm$strategy = ifelse(vdgm$Genre == 'strategy',1,0)
-
-vdgm$DS = ifelse (vdgm$Platform == 'DS',1, 0)
-vdgm$GBA = ifelse(vdgm$Platform =='GBA',1, 0)
-vdgm$GC = ifelse(vdgm$Platform =='GC',1,0)
-vdgm$Pc = ifelse(vdgm$Platform=='PC',1,0)
-vdgm$Ps2 = ifelse(vdgm$Platform =="PS2",1,0)
-vdgm$Ps3 = ifelse(vdgm$Platform =="PS3",1,0)
-vdgm$PSP = ifelse (vdgm$Platform=="PSP",1,0)
-vdgm$Wii = ifelse (vdgm$platform =="Wii",1,0)
-vdgm$X360 = ifelse(vdgm$Platform =="x360",1,0)
-vdgm$XB = ifelse (vdgm$Platform == "XB",1,0)
-vdgm$DS = ifelse(vdgm$Platform == "DS",1,0)
-
-
-
-vdgm$E = ifelse(vdgm$Rating == "E",1,0)
-vdgm$`E10+` = ifelse(vdgm$Rating == "E10+",1,0)
-vdgm$M = ifelse(vdgm$Rating =='M' , 1,0)
-vdgm$T = ifelse(vdgm$Rating == "T",1,0)
-
+vdgm$Genre<-as.factor(vdgm$Genre)
+vdgm$Platform<-as.factor(vdgm$Platform)
+vdgm$Rating<-as.factor(vdgm$Rating)
 
 ```
 
@@ -473,7 +431,7 @@ summary(lm3)
     R-squared? What would be the economic reasoning on why that
     particular model provides the best fit?
 
-Ans: lm2 has the highest R-squared value. It makes sense that this has the best fit as the sales variable usually been increasing exponentially.
+Ans: lm3 has the highest R-squared value. It makes sense that this has the best fit as the sales variable usually been increasing exponentially.
 
 (h) Interpret the parameter estimates for each of 'genre' in plain English. 
 
@@ -486,4 +444,4 @@ Ans: Simulation Games created the highest impact in terms of Global Sales and Sp
 (i) Interpret the parameter estimate for 'ln_user_count' in plain
     English.
     
-Ans: ln_User_Count has a p_value > 0.05. There we cannot reject the null hypothesis i.e. the coefficeint of ln_user_count = 0.
+Ans: ln_User_Count has a p_value < 0.05. There we can reject the null hypothesis i.e. the coefficeint of ln_user_count = 0.
