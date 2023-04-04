@@ -78,13 +78,11 @@ bbb[,bucket := paste("Bucket ",as.character(decile))]
 
 ```{r}
 
-library(ggplot2)
-
 # Calculate the average response rate for each decile
 response_rates <- aggregate(book_/total_ ~ decile, bbb, mean)
 
 # Create the bar chart
-hist(response_rates)
+hist(bbb$prob)
 
 
 ```
