@@ -1,0 +1,90 @@
+---
+title: "HW-4"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+Part I: Logistic Regression
+1. Estimate a logistic regression model using "buyer" as the dependent variable and the following as predictor variables:
+* last
+* total_ 
+* gender 
+* child 
+* youth 
+* cook 
+* do_it 
+* reference 
+* art
+* geog
+
+Hint: To do this in R, first transform the buyer and gender variables into a 0/1 dummy variable using data.table syntax
+Then run the logistic regression command.
+Finally, ask R to create a new variable that contains the predicted probability of purchase for each consumer.
+
+```{r}
+require(data.table)
+bbb <- fread("~/Library/Mobile Documents/com~apple~CloudDocs/School Work/Sem 2/BUAN 6337/BUAN_6337_Predictive_Analysis/HW/HW-4/BBB.csv", 
+             na.strings = c("NA", ""), 
+               sep = "auto",
+               stringsAsFactors = FALSE,
+               data.table = TRUE,)
+summary(bbb)
+
+```
+
+Changing buyer and gender variables into a flag
+
+```{r}
+
+bbb[,gender := ifelse(bbb$gender == "M",1,0)]
+bbb[,buyer := ifelse(bbb$buyer == "yes",1,0)]
+
+```
+
+Logistic regression
+
+```{r}
+fmla <- buyer ~ last + total_ + gender + child + youth + cook + do_it + reference + art + geog
+logit <- glm(fmla, data = bbb,family= binomial(link="logit"))
+
+```
+Predicted probabilities 
+
+```{r}
+bbb[, prob := predict(logit,type = "response")]
+head(bbb)
+```
+
+2. Summarize and interpret the results (so that a marketing manager can understand them). Which variables are statistically significant? Which seem to be economically important? Interpret the odds-ratios for each of the predictors.
+
+```{r}
+
+summary(logit)
+
+```
+
+
+Part II: Decile Analysis of Logistic Regression Results
+1. Assign each customer to a decile based on his or her predicted probability of purchase with ‘bucket 1’ being the highest average purchase probability.
+
+```{r}
+library(dplyr)
+bbb[,decile := ntile(1 - bbb$prob,10)]
+bbb[,bucket := paste("Bucket ",as.character(decile))]
+
+```
+
+2. Create a bar chart plotting the average response rate by decile (as just defined above).
+
+```{r}
+
+library(ggplot2)
+
+# Calculate the average response rate for each decile
+response_rates <- aggregate(book_/total_ ~ decile, bbb, mean)
+
+# Create the bar chart
+hist(response_rates)
+
+
+```
