@@ -104,11 +104,4 @@ dt <- bbb[, c("buyer","total_", "last", "child", "youth", "cook", "do_it", "refe
 # assign each customer to a decile based on predicted probability of purchase
 dt[, decile := ntile(1 - buyer, 10)]
 
-# calculate the average values by decile
-result <- dt[, .(  avg_total = mean(total),  avg_months_since_last_purchase = mean(months_since_last_purchase),  avg_children = mean(children),  avg_youth = mean(youth),  avg_cookbooks = mean(cookbooks),  avg_do_it_yourself = mean(do_it_yourself),  avg_reference = mean(reference),  avg_art = mean(art),  avg_geography = mean(geography)), by = decile]
-
-# display the result
-result
-
-
 ```
