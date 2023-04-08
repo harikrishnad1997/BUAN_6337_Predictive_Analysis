@@ -78,11 +78,37 @@ bbb[,bucket := paste("Bucket ",as.character(decile))]
 
 ```{r}
 
-# Calculate the average response rate for each decile
-response_rates <- aggregate(book_/total_ ~ decile, bbb, mean)
+response_rates=bbb[,mean(buyer)*100,by=decile]
 
-# Create the bar chart
-hist(bbb$prob)
+barplot(V1~decile,data=response_rates)
+
+```
+
+3. Generate a table showing the number of customers, the number of buyers of "The Art History of Florence,' and the response rate to the offer by decile for the random sample (i.e. the 50,000 customers) in the dataset.
+
+```{r}
+
+results <- bbb[, .(num_cust = .N, num_buy = sum(buyer), resp_rate = sum(buyer) / .N), by = decile]
+
+```
+
+4. For the 50,000 customers in the dataset, generate a table showing the average values of the following variables by probability of purchase decile:
+Total $ spent
+Months since last purchase, and
+Number of books purchased for each of the seven categories (i.e., children, youth, cookbooks, do-it-yourself, reference, art and geography).
+
+```{r}
+
+dt <- bbb[, c("buyer","total_", "last", "child", "youth", "cook", "do_it", "reference", "art", "geog")]
+
+# assign each customer to a decile based on predicted probability of purchase
+dt[, decile := ntile(1 - buyer, 10)]
+
+# calculate the average values by decile
+result <- dt[, .(  avg_total = mean(total),  avg_months_since_last_purchase = mean(months_since_last_purchase),  avg_children = mean(children),  avg_youth = mean(youth),  avg_cookbooks = mean(cookbooks),  avg_do_it_yourself = mean(do_it_yourself),  avg_reference = mean(reference),  avg_art = mean(art),  avg_geography = mean(geography)), by = decile]
+
+# display the result
+result
 
 
 ```
