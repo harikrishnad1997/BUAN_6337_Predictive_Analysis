@@ -4,6 +4,8 @@ output: html_document
 date: "`r Sys.Date()`"
 ---
 
+Authors : Mankirat Singh Bhamra MXB220061 - Harikrishna Dev HXD220000 - Krishnan Venkatesan KXV220007
+
 Part I: Logistic Regression
 1. Estimate a logistic regression model using "buyer" as the dependent variable and the following as predictor variables:
 * last
@@ -78,7 +80,7 @@ bbb[,bucket := paste("Bucket ",as.character(decile))]
 
 ```{r}
 
-response_rates=bbb[,mean(buyer)*100,by=decile]
+response_rates=bbb[,mean(buyer),by=decile]
 
 barplot(V1~decile,data=response_rates)
 
@@ -90,6 +92,8 @@ barplot(V1~decile,data=response_rates)
 
 results <- bbb[, .(num_cust = .N, num_buy = sum(buyer), resp_rate = sum(buyer) / .N), by = decile]
 
+head(results)
+
 ```
 
 4. For the 50,000 customers in the dataset, generate a table showing the average values of the following variables by probability of purchase decile:
@@ -99,9 +103,9 @@ Number of books purchased for each of the seven categories (i.e., children, yout
 
 ```{r}
 
-dt <- bbb[, c("buyer","total_", "last", "child", "youth", "cook", "do_it", "reference", "art", "geog")]
+dt <- bbb[, c("buyer","total_", "last", "child", "youth", "cook", "do_it", "reference", "art", "geog","prob")]
 
 # assign each customer to a decile based on predicted probability of purchase
-dt[, decile := ntile(1 - buyer, 10)]
+dt[, decile := ntile(1 - prob, 10)]
 
 ```
