@@ -120,13 +120,26 @@ avg_bbb
 # summarize average values by decile
 require(psych)
 results2 <- describeBy(bbb,bbb$decile)
+bbb[,decile := factor(decile,levels = c(1:10))]
 results2
 ```
 ```{r}
+
+plot(avg_bbb$decile,avg_bbb$avg_total,main = "Average price of purchase",xlab = "Deciles",ylab = "Average price")
+plot(avg_bbb$decile,avg_bbb$avg_last,main = "Average number of months since most recent purchase",xlab = "Deciles",ylab = "Number of months since most recent purchase")
+plot(avg_bbb$decile,avg_bbb$avg_child,main = "Average number of children's books purchased",xlab = "Deciles",ylab = "Average number of children's books purchased")
+plot(avg_bbb$decile,avg_bbb$avg_youth,main = "Average number of youth books purchased",xlab = "Deciles",ylab = "Average number of youth books purchased")
+plot(avg_bbb$decile,avg_bbb$avg_cook,main = "Average number of cook books purchased",xlab = "Deciles",ylab = "Average number of cook books purchased")
+plot(avg_bbb$decile,avg_bbb$avg_do_it,main = "Average number of do ti books purchased",xlab = "Deciles",ylab = "Average number of do it books purchased")
+plot(avg_bbb$decile,avg_bbb$avg_reference,main = "Average number of reference books purchased",xlab = "Deciles",ylab = "Average number of reference books purchased")
+plot(avg_bbb$decile,avg_bbb$avg_art,main = "Average number of art books purchased",xlab = "Deciles",ylab = "Average number of art books purchased")
+
+```
+
+```{r}
 require(ggplot2)
 require(GGally)
-bbb[,decile := factor(decile,levels = c(1:10))]
-ggpairs(bbb,columns =7:12,aes(color = decile, alpha = 0.5))
+#ggpairs(bbb,columns =7:12,aes(color = decile, alpha = 0.5))
 ```
 This shows the average values of different variables for each decile based on the predicted probability of purchase. For example, customers in decile 1 had an average total spend of $257.35, an average of 7.19 months since their last purchase, and purchased on average 1.50 art books, 1.33 geography books, and so on. The decile analysis provides insights into the behavior of different groups of customers, as reflected in their average spending patterns and purchase behavior. The patterns in the decile analysis are consistent with the conclusions drawn from the logistic regression, which identified the significant predictors of customer behavior.
 
