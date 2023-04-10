@@ -73,6 +73,7 @@ Part II: Decile Analysis of Logistic Regression Results
 library(dplyr)
 bbb[,decile := ntile(1 - bbb$prob,10)]
 bbb[,bucket := paste("Bucket ",as.character(decile))]
+bbb[,decile := factor(decile,levels = c(1:10))]
 
 ```
 
