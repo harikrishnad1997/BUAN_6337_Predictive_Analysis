@@ -103,9 +103,96 @@ Number of books purchased for each of the seven categories (i.e., children, yout
 
 ```{r}
 
-dt <- bbb[, c("buyer","total_", "last", "child", "youth", "cook", "do_it", "reference", "art", "geog","prob")]
+avg_bbb <- bbb[, .(avg_total = mean(total_), avg_last = mean(last), 
+                   avg_child = mean(child), avg_youth = mean(youth),
+                   avg_cook = mean(cook), avg_do_it = mean(do_it),
+                   avg_reference = mean(reference), avg_art = mean(art),
+                   avg_geog = mean(geog)), 
+              by = decile]
 
-# assign each customer to a decile based on predicted probability of purchase
-dt[, decile := ntile(1 - prob, 10)]
+avg_bbb
 
 ```
+
+5. Summarize and interpret the decile analysis results. Are the patterns in the decile analysis consistent with your conclusions from the logistic regression? (Hint: graph some of the results in the previous question.)
+
+```{r}
+# summarize average values by decile
+require(psych)
+results2 <- describeBy(bbb,bbb$decile)
+results2
+```
+```{r}
+
+```
+This shows the average values of different variables for each decile based on the predicted probability of purchase. For example, customers in decile 1 had an average total spend of $257.35, an average of 7.19 months since their last purchase, and purchased on average 1.50 art books, 1.33 geography books, and so on. The decile analysis provides insights into the behavior of different groups of customers, as reflected in their average spending patterns and purchase behavior. The patterns in the decile analysis are consistent with the conclusions drawn from the logistic regression, which identified the significant predictors of customer behavior.
+
+Part III: Profitability Analysis 
+Use the following cost information to assess the profitability of using logistic regression to 
+determine which of the remaining 500,000 customers should receive a specific offer: 
+Cost to mail offer to customer: 0.5$
+Selling price (shipping included): 18$
+Wholesale price paid by BookBinders: 9$
+Shipping costs: 3$
+1. What is the breakeven response rate? 
+
+The breakeven response rate can be calculated as follows:
+Revenue per customer = Selling price - Wholesale price - Shipping costs = $18.00 - $9.00 - $3.00 = $6.00
+Breakeven cost per response = Cost to mail offer to customer / Revenue per customer = $0.50 / $6.00 = 0.0833
+Therefore, the breakeven response rate is 8.33% (i.e., we need at least 8.33% of the targeted customers to respond to the offer to break even).
+
+2. For the customers in the dataset, create a new variable (call it "mailto_logit") with a value of 1 
+if the customer's predicted probability is greater than or equal to the breakeven response 
+rate and 0 otherwise. 
+Hint: You can use data.table’s conditional assignment syntax
+
+```{r}
+# calculate breakeven response rate
+revenue_per_customer <- 18 - 9 - 3
+breakeven_cost_per_response <- 0.5 / revenue_per_customer
+breakeven_response_rate <- breakeven_cost_per_response * 100
+breakeven_response_rate
+
+# create new variable "mailto_logit"
+bbb[, mailto_logit := ifelse(prob >= breakeven_cost_per_response, 1, 0)]
+
+```
+
+3. Out of the 50,000 test sample, how many customers should have received the targeting 
+promotion mail for “The Art History of Florence” based on the breakeven response rate (i.e., 
+the number of mailto_logit ==1 in the data)? Also, among those who would have targeted, 
+what would have been the response rate (i.e., mean of buyer among mailto_logit ==1)? How 
+much higher is this response rate relative to the overall response rate in the data?
+
+```{r}
+# calculate number of customers to receive offer
+num_customers <- sum(bbb$mailto_logit)
+num_customers
+
+# calculate response rate among those who receive offer
+response_rate <- mean(bbb$buyer[bbb$mailto_logit == 1])
+response_rate
+
+# calculate expected profit from campaign
+expected_profit <- num_customers * (18 - 9 - 3 - 0.5)
+expected_profit
+```
+
+4. Consider that there are 500,000 remaining customers for the roll-out (excluding 50,000 test 
+group in the current data. Assuming our test group is similar to the roll-out group (i.e., our 
+test group is representative of the roll-out group), what is the expected number of buyers of 
+'The Art History of Florence' if we do targeted mailing based on the breakeven response rate?
+Hint: Count the number of buyers among the targeted (mailto_logit==1) in the test group and 
+multiply it by 10 since the roll-out sample is 10 times larger. Alternatively, you can use the 
+response rate.
+
+```{r}
+
+# calculate expected number of buyers in roll-out group
+expected_num_buyers <- num_customers * (mean(bbb$buyer[bbb$mailto_logit == 1]) / mean(bbb$mailto_logit))
+expected_num_buyers_rollout <- expected_num_buyers * 10
+expected_num_buyers_rollout
+
+```
+
+
