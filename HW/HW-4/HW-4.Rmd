@@ -120,7 +120,6 @@ avg_bbb
 # summarize average values by decile
 require(psych)
 results2 <- describeBy(bbb,bbb$decile)
-bbb[,decile := factor(decile,levels = c(1:10))]
 results2
 ```
 ```{r}
