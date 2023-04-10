@@ -4,7 +4,7 @@ output: html_document
 date: "`r Sys.Date()`"
 ---
 
-Authors : Mankirat Singh Bhamra MXB220061 - Harikrishna Dev HXD220000 - Krishnan Venkatesan KXV220007
+Authors : Mankirat Singh Bhamra MXB220061 - Harikrishna Dev HXD220000 - Krishnan Venkatesan KXV220007 - Medha Priyanga Saravanan MXS220057
 
 Part I: Logistic Regression
 1. Estimate a logistic regression model using "buyer" as the dependent variable and the following as predictor variables:
@@ -123,7 +123,10 @@ results2 <- describeBy(bbb,bbb$decile)
 results2
 ```
 ```{r}
-
+require(ggplot2)
+require(GGally)
+bbb[,decile := factor(decile,levels = c(1:10))]
+ggpairs(bbb,columns =7:12,aes(color = decile, alpha = 0.5))
 ```
 This shows the average values of different variables for each decile based on the predicted probability of purchase. For example, customers in decile 1 had an average total spend of $257.35, an average of 7.19 months since their last purchase, and purchased on average 1.50 art books, 1.33 geography books, and so on. The decile analysis provides insights into the behavior of different groups of customers, as reflected in their average spending patterns and purchase behavior. The patterns in the decile analysis are consistent with the conclusions drawn from the logistic regression, which identified the significant predictors of customer behavior.
 
@@ -155,7 +158,7 @@ breakeven_response_rate
 
 # create new variable "mailto_logit"
 bbb[, mailto_logit := ifelse(prob >= breakeven_cost_per_response, 1, 0)]
-
+bbb
 ```
 
 3. Out of the 50,000 test sample, how many customers should have received the targeting 
