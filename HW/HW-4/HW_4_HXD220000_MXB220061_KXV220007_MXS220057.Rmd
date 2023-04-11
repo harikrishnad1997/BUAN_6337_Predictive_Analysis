@@ -1,5 +1,5 @@
 ---
-title: "HW-4"
+title: "HW_4_HXD220000_MXB220061_KXV220007_MXS220057"
 output: html_document
 date: "`r Sys.Date()`"
 ---
@@ -65,6 +65,7 @@ summary(logit)
 
 ```
 
+When we look at the z values of the different terms, we can determine the impact of the each variable in the logistic model. The art catgeory has the highest propensity of buyers as the |z value_art| is the highest. This is succeeded by the last time the person bought a book i.e. a buyer who hasn't bought a book in a while is more likely to buy a book now. Total value has the least significance among all the factors, whichc implies buyers don't care much about the total cost of their purchase.
 
 Part II: Decile Analysis of Logistic Regression Results
 1. Assign each customer to a decile based on his or her predicted probability of purchase with ‘bucket 1’ being the highest average purchase probability.
@@ -135,6 +136,29 @@ plot(avg_bbb$decile,avg_bbb$avg_reference,main = "Reference books purchased",xla
 plot(avg_bbb$decile,avg_bbb$avg_art,main = "Art books",xlab = "Deciles",ylab = "Average number of art books purchased")
 
 ```
+Total:
+We can see that Top deciles purchase the most in terms of purchase amount and it decreases as the decile progress. Note that there is small rise in Decile 10 but that could be due to population bias.
+
+Last month:
+We can see that recency of purchase heavily influences probability of purchase as it more likely to purhcase the book if its been a long time since the customers last purchase.
+
+Children category:
+We see that its evenly distributed around decile 5, where customers are more likely to buy the book when they are closer to decile 1 or 10. 
+
+Youth category:
+We see that its almost evenly distributed around decile 5 but it peaks at Decile 1.
+
+Cook category:
+We see that its evenly distributed around decile 5, where customers are more likely to buy the book when they are closer to decile 10.
+
+Do it category:
+We can see that do it books are most purchased by Decile 10 and the probability of do it books being bought dips at decile 4.
+
+Reference category:
+We can see that do it books are most purchased by Decile 1 and the probability of do it books being bought dips at decile 8.
+
+Art books:
+People who buy the book have a higher probability of buying other art books.
 
 
 Part III: Profitability Analysis 
@@ -148,8 +172,8 @@ Shipping costs: 3$
 
 The breakeven response rate can be calculated as follows:
 Revenue per customer = Selling price - Wholesale price - Shipping costs = $18.00 - $9.00 - $3.00 = $6.00
-Breakeven cost per response = Cost to mail offer to customer / Revenue per customer = $0.50 / $6.00 = 0.0833
-Therefore, the breakeven response rate is 8.33% (i.e., we need at least 8.33% of the targeted customers to respond to the offer to break even).
+Breakeven cost per response = Cost to mail offer to customer / Revenue per customer = $0.50 / $6.00 = <b>0.0833</b>
+Therefore, the breakeven response rate is <b>8.33%</b> (i.e., we need at least 8.33% of the targeted customers to respond to the offer to break even).
 
 2. For the customers in the dataset, create a new variable (call it "mailto_logit") with a value of 1 
 if the customer's predicted probability is greater than or equal to the breakeven response 
