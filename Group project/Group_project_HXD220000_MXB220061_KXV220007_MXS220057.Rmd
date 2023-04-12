@@ -1,0 +1,35 @@
+---
+title: "Group_project_HXD220000_MXB220061_KXV220007_MXS220057"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r}
+
+require(data.table)
+require(tidyverse)
+require(partykit)
+require(psych)
+
+```
+
+```{r}
+
+data <- fread("heart.csv",stringsAsFactors = T)
+str(data)
+describe(data)
+
+```
+
+```{r}
+
+require(ggplot2)
+require(GGally)
+ggpairs(data)
+
+```
+
+```{r}
+data[,HeartDisease:=as.factor(HeartDisease)]
+ggpairs(data,column=1:11,ggplot2::aes(colour=HeartDisease))
+```
