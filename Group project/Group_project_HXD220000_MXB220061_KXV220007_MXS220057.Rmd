@@ -33,3 +33,20 @@ ggpairs(data)
 data[,HeartDisease:=as.factor(HeartDisease)]
 ggpairs(data,column=1:11,ggplot2::aes(colour=HeartDisease))
 ```
+
+```{r}
+na <- is.na(data)
+all(na == T)
+```
+
+```{r}
+
+data_hd <- describeBy(data,data$HeartDisease,IQR = TRUE)
+
+```
+
+```{r}
+
+#boxplot(HeartDisease~.,data=data)
+
+```
