@@ -27,15 +27,15 @@ describe(data)
 require(ggplot2)
 require(GGally)
 ggpairs(data)
-ggsave("ggpairs_data.png", width = 10, height = 10, dpi = 300,limitsize = FALSE)
+#ggsave("ggpairs_data.png", width = 10, height = 10, dpi = 300,limitsize = FALSE)
 
 ```
 
 ```{r}
 data[,HeartDisease:=as.factor(HeartDisease)]
 ggpairs(data,column=1:11,ggplot2::aes(colour=HeartDisease))
-ggsave("ggpairs_hd_data.png", width = 10, height = 10, dpi = 300,limitsize = FALSE)
-dev.off()
+#ggsave("ggpairs_hd_data.png", width = 10, height = 10, dpi = 300,limitsize = FALSE)
+#dev.off()
 ```
 
 ```{r}
