@@ -40,13 +40,38 @@ all(na == T)
 ```
 
 ```{r}
-
-data_hd <- describeBy(data,data$HeartDisease,IQR = TRUE)
+data_desc <- describe(data,IQR = TRUE)
+data_desc
+data_hd_desc <- describeBy(data,data$HeartDisease,IQR = TRUE)
+data_hd_desc
 
 ```
 
 ```{r}
 
-#boxplot(HeartDisease~.,data=data)
+barplot(table(data$Sex), main = "Sex Distribution Plot")
+barplot(table(data$ChestPainType), main = "Chest Distribution Plot")
+barplot(table(data$FastingBS), main = "FastingBS Distribution Plot")
+barplot(table(data$ExerciseAngina), main = "ExerciseAngina Distribution Plot")
+barplot(table(data$ST_Slope), main = "ST_Slope Distribution Plot")
+barplot(table(data$HeartDisease), main = "Heart Disease Distribution Plot")
+
+```
+
+```{r}
+
+hist(data$Age,xlab = "Age",main = "Histogram of Age")
+hist(data$RestingBP,xlab = "RestingBP",main = "Histogram of RestingBP")
+hist(data$Cholesterol,xlab = "Cholesterol",main = "Histogram of Cholesterol")
+hist(data$Cholesterol,xlab = "Cholesterol",main = "Histogram of Cholesterol")
+hist(data$Oldpeak,xlab = "Oldpeak",main = "Histogram of Oldpeak")
+
+```
+
+```{r}
+
+pie(table(data$HeartDisease),labels = names(data$HeartDisease),main = "Heart Disease")
+
+barplot(table(data$HeartDisease),main = "Heart Disease")
 
 ```
