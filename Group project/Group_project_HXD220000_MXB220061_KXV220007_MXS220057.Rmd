@@ -120,6 +120,6 @@ model_eval <- function(model,pred,test){
 require(randomForest)
 rfModel      <- randomForest(fmla,train)
 rfPred <- predict(rfModel,test)
-#model_eval(rfPred,test$HeartDisease)
-
+cm.rf <- table(rfPred,test$HeartDisease,dnn=c("Classified","Actual"))
+sum(diag(cm.rf))/sum(cm.rf)
 ```

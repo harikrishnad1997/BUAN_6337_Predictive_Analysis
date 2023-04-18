@@ -692,7 +692,9 @@ model_eval &lt;- function(model,pred,test){
 ##     margin</code></pre>
 <pre class="r"><code>rfModel      &lt;- randomForest(fmla,train)
 rfPred &lt;- predict(rfModel,test)
-#model_eval(rfPred,test$HeartDisease)</code></pre>
+cm.rf &lt;- table(rfPred,test$HeartDisease,dnn=c(&quot;Classified&quot;,&quot;Actual&quot;))
+sum(diag(cm.rf))/sum(cm.rf)</code></pre>
+<pre><code>## [1] 0.8641304</code></pre>
 
 
 
