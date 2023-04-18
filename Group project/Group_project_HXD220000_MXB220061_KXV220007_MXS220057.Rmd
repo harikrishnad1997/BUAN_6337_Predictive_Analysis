@@ -34,6 +34,7 @@ ggsave("ggpairs_data.png", width = 10, height = 10, dpi = 300,limitsize = FALSE)
 data[,HeartDisease:=as.factor(HeartDisease)]
 ggpairs(data,column=1:11,ggplot2::aes(colour=HeartDisease))
 ggsave("ggpairs_hd_data.png", width = 10, height = 10, dpi = 300,limitsize = FALSE)
+dev.off()
 ```
 
 ```{r}
@@ -75,5 +76,61 @@ hist(data$Oldpeak,xlab = "Oldpeak",main = "Histogram of Oldpeak")
 pie(table(data$HeartDisease),labels = names(data$HeartDisease),main = "Heart Disease")
 
 barplot(table(data$HeartDisease),main = "Heart Disease")
+
+```
+
+Creating test train splits
+
+```{r}
+seed    <- 504737137
+set.seed(seed)
+n <- nrow(data)
+frac <- 0.2
+tst <- sample(n,ceiling(frac*n))
+train <- data[-tst,]
+test <- data[tst,]
+
+```
+
+
+Model selection
+  
+```{r}
+require(caret)
+require(pROC)
+
+model <- function(classifier) {
+  classifier_fit <- train(train, method = "glm", family = "binomial",
+                          trControl = trainControl(method = "cv", number = 10))
+  prediction <- predict(classifier_fit, newdata = test)
+  cv <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+  acc <- confusionMatrix(prediction, test)$overall["Accuracy"]
+  roc_auc <- roc(test$HeartDisease, prediction)
+  
+  print(paste("Accuracy:", sprintf("%.2f%%", acc*100)))
+  print(paste("Cross Validation Score:", sprintf("%.2f%%", 
+                trainControl(method = "cv", number = 10)$summary$auc)))
+  print(paste("ROC_AUC Score:", sprintf("%.2f%%", auc(roc_auc)*100)))
+  plot(roc_auc, main = "ROC_AUC_Plot")
+}
+
+model_evaluation <- function(classifier) {
+  # Confusion Matrix
+  cm <- confusionMatrix(predict(classifier, test), test$HeartDisease)
+  names <- c('True Neg', 'False Pos', 'False Neg', 'True Pos')
+  counts <- cm$table
+  percentages <- sprintf("%.2f%%", 100*cm$byClass)
+  labels <- paste(names, "\n", counts, "\n", percentages, sep="")
+  labels <- matrix(labels, nrow=2, ncol=2, byrow=TRUE)
+  colnames(labels) <- c('Heart Disease: No', 'Heart Disease: Yes')
+  rownames(labels) <- c('Prediction: No', 'Prediction: Yes')
+  heatmap(labels, cexRow=1.5, cexCol=1.5, margins=c(5,5))
+
+  # Classification Report
+  print(caret::confusionMatrix(predict(classifier, x_test), y_test))
+}
+
+classifier_lr <- glm(HeartDisease ~., data = train_data, family = "binomial")
+model(classifier_lr)
 
 ```
