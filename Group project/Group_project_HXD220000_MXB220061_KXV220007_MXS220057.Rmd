@@ -5,11 +5,12 @@ date: "`r Sys.Date()`"
 ---
 
 ```{r}
-
 require(data.table)
 require(tidyverse)
 require(partykit)
 require(psych)
+require(caret)
+require(pROC)
 
 ```
 
@@ -94,43 +95,31 @@ test <- data[tst,]
 
 
 Model selection
-  
+
 ```{r}
-require(caret)
-require(pROC)
+fmla <- HeartDisease~.
+```
 
-model <- function(classifier) {
-  classifier_fit <- train(train, method = "glm", family = "binomial",
-                          trControl = trainControl(method = "cv", number = 10))
-  prediction <- predict(classifier_fit, newdata = test)
-  cv <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
-  acc <- confusionMatrix(prediction, test)$overall["Accuracy"]
-  roc_auc <- roc(test$HeartDisease, prediction)
-  
-  print(paste("Accuracy:", sprintf("%.2f%%", acc*100)))
-  print(paste("Cross Validation Score:", sprintf("%.2f%%", 
-                trainControl(method = "cv", number = 10)$summary$auc)))
-  print(paste("ROC_AUC Score:", sprintf("%.2f%%", auc(roc_auc)*100)))
-  plot(roc_auc, main = "ROC_AUC_Plot")
+```{r}
+error_eval      <- function(lbl,v) { 
+               sse <- sum(v^2)
+               mse <- sse/length(v)
+               return(data.table(lbl=lbl,sse=sse,mse=mse,rmse=sqrt(mse))) }
+
+model_eval <- function(model,pred,test){
+  #roc <- roc(pred,test)
+  #pred <- prediction(model,test)
+  #perf <- performance(pred, "tpr", "fpr")
+  #graph <- plot(perf, main = "ROC Curve", colorize = TRUE)
+  acc <- caret::confusionMatrix(pred,test)
+  return(list(acc=acc))
 }
+```
 
-model_evaluation <- function(classifier) {
-  # Confusion Matrix
-  cm <- confusionMatrix(predict(classifier, test), test$HeartDisease)
-  names <- c('True Neg', 'False Pos', 'False Neg', 'True Pos')
-  counts <- cm$table
-  percentages <- sprintf("%.2f%%", 100*cm$byClass)
-  labels <- paste(names, "\n", counts, "\n", percentages, sep="")
-  labels <- matrix(labels, nrow=2, ncol=2, byrow=TRUE)
-  colnames(labels) <- c('Heart Disease: No', 'Heart Disease: Yes')
-  rownames(labels) <- c('Prediction: No', 'Prediction: Yes')
-  heatmap(labels, cexRow=1.5, cexCol=1.5, margins=c(5,5))
-
-  # Classification Report
-  print(caret::confusionMatrix(predict(classifier, x_test), y_test))
-}
-
-classifier_lr <- glm(HeartDisease ~., data = train_data, family = "binomial")
-model(classifier_lr)
+```{r}
+require(randomForest)
+rfModel      <- randomForest(fmla,train)
+rfPred <- predict(rfModel,test)
+#model_eval(rfPred,test$HeartDisease)
 
 ```
