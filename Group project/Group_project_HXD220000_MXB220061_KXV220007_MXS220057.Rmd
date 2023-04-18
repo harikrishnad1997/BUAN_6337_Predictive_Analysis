@@ -116,10 +116,22 @@ model_eval <- function(model,pred,test){
 }
 ```
 
+Random forest 
+
 ```{r}
 require(randomForest)
-rfModel      <- randomForest(fmla,train)
+rfModel      <- randomForest(fmla,train,ntree=500)
+summary(rfModel)
+print(rfModel)
+rfModel$localImportance
+getTree(rfModel,labelVar = F)
+rfPred <- predict(rfModel,test,type = "prob")
+require(ROCR)
+perf=prediction(rfPred[,2], test$HeartDisease)
+auc = performance(perf, "auc")
+pred3 = performance(perf, "tpr","fpr") 
 rfPred <- predict(rfModel,test)
+plot(pred3,main="ROC Curve for Random Forest",col=2,lwd=2)
 cm.rf <- table(rfPred,test$HeartDisease,dnn=c("Classified","Actual"))
 sum(diag(cm.rf))/sum(cm.rf)
 ```
