@@ -70,6 +70,14 @@ hist(data$Cholesterol,xlab = "Cholesterol",main = "Histogram of Cholesterol")
 hist(data$Cholesterol,xlab = "Cholesterol",main = "Histogram of Cholesterol")
 hist(data$Oldpeak,xlab = "Oldpeak",main = "Histogram of Oldpeak")
 
+require(car)
+qqPlot(data$Age,xlab = "Age",main = "Histogram of Age")
+qqPlot(data$RestingBP,xlab = "RestingBP",main = "Histogram of RestingBP")
+qqPlot(data$Cholesterol,xlab = "Cholesterol",main = "Histogram of Cholesterol")
+qqPlot(data$Cholesterol,xlab = "Cholesterol",main = "Histogram of Cholesterol")
+qqPlot(data$Oldpeak,xlab = "Oldpeak",main = "Histogram of Oldpeak")
+
+
 ```
 
 ```{r}
